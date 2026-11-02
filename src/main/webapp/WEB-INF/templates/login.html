@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Employee Project Allocation System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../css/style.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">ProjectAlloc</h1>
+            <p class="auth-subtitle">Employee & Project Allocation System</p>
+        </div>
+
+        <!-- Feedback Alert Messages -->
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
+            Invalid credentials.
+        </div>
+        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
+            Logged out successfully.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label class="form-label" for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="form-control"
+                       placeholder="e.g., admin@college.edu" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control"
+                       placeholder="Enter your password" required>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+                    Sign In
+                </button>
+            </div>
+        </form>
+
+        <!-- College Examination Demo Helper Credentials Box -->
+        <div style="margin-top: 2rem; padding: 1rem; background-color: #f8fafc; border: 1px dashed var(--border-color); border-radius: var(--radius-sm); font-size: 0.825rem;">
+            <strong>Demo Credentials for Evaluation:</strong>
+            <div style="margin-top: 0.5rem;">
+                <span class="badge-role ADMIN">ADMIN</span>
+                <span style="font-family: monospace;">admin@college.edu</span> / <span style="font-family: monospace;">AdminPassword123!</span>
+            </div>
+            <div style="margin-top: 0.35rem;">
+                <span class="badge-role EMPLOYEE">EMPLOYEE</span>
+                <span style="font-family: monospace;">shreyansh.singh@college.edu</span> / <span style="font-family: monospace;">EmpPassword123!</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    &copy; 2026 Employee Project Allocation System | Practical Examination
+</footer>
+
+</body>
+</html>

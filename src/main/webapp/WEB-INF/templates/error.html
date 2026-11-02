@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Error - ProjectAlloc</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" th:href="@{/dashboard}">
+            <span>🏢 ProjectAlloc</span>
+        </a>
+        <ul class="nav-links">
+            <li><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+            <li><a class="btn btn-secondary btn-sm" th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="card" style="max-width: 600px; margin: 3rem auto; text-align: center;">
+        <div style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;">⚠️</div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
+            Application Notice (HTTP <span th:text="${errorCode}">500</span>)
+        </h2>
+        <div class="alert alert-danger" style="margin-top: 1rem; text-align: left;" th:utext="${errorMessage}">
+            An unexpected error occurred during request processing.
+        </div>
+
+        <div style="margin-top: 1.5rem; padding: 0.75rem; background-color: #f8fafc; border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--text-muted); text-align: left;">
+            <strong>Request Dispatching Mechanism:</strong>
+            <p style="margin-top: 0.25rem;">
+                This error page was rendered via server-side <code>RequestDispatcher.forward()</code>.
+                The URL in your browser remained unchanged while the internal request was forwarded to <code>/error</code> (ErrorServlet).
+            </p>
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+            <a th:href="@{/dashboard}" class="btn btn-primary">&larr; Return to Dashboard</a>
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    &copy; 2026 Employee Project Allocation System | Practical Examination
+</footer>
+
+</body>
+</html>

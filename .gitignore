@@ -1,0 +1,7 @@
+target/
+*.war
+.idea/
+*.iml
+.smarttomcat/
+.DS_Store
+*.log

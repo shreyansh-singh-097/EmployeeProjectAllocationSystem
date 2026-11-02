@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isPersonalView ? 'My Assigned Projects' : 'Allocations Overview'} + ' - ProjectAlloc'">Project Allocations</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" th:href="@{/dashboard}">
+            <span>🏢 ProjectAlloc</span>
+        </a>
+        <ul class="nav-links">
+            <li><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+            <li th:if="${currentUserRole == 'ADMIN'}">
+                <a class="nav-link" th:href="@{/employees}">Employees</a>
+            </li>
+            <li th:if="${currentUserRole == 'ADMIN'}">
+                <a class="nav-link" th:href="@{/projects}">Projects</a>
+            </li>
+            <li th:if="${currentUserRole == 'ADMIN'}">
+                <a class="nav-link" th:classappend="${!isPersonalView ? 'active' : ''}" th:href="@{/allocations}">Allocations</a>
+            </li>
+            <li>
+                <a class="nav-link" th:classappend="${isPersonalView ? 'active' : ''}" th:href="@{/my-projects}">My Projects</a>
+            </li>
+            <li>
+                <div class="user-profile-badge">
+                    <span th:text="${currentUserName}">User</span>
+                    <span class="badge-role" th:classappend="${currentUserRole}" th:text="${currentUserRole}">ADMIN</span>
+                </div>
+            </li>
+            <li><a class="btn btn-secondary btn-sm" th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <!-- Alerts -->
+    <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
+        Success message.
+    </div>
+    <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
+        Error message.
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- VIEW A: PERSONAL ASSIGNED PROJECTS (EMPLOYEE ROLE / SELF)  -->
+    <!-- ========================================================== -->
+    <div th:if="${isPersonalView}">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">My Assigned Projects</h2>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+                        Projects allocated to <strong th:text="${employee.employeeName}">User</strong>
+                        (<span th:text="${employee.designation}">Role</span>).
+                    </p>
+                </div>
+                <a th:href="@{/dashboard}" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Client Name</th>
+                        <th>Start Date</th>
+                        <th>Budget</th>
+                        <th>Team Size</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#sets.isEmpty(myProjects)}">
+                        <td colspan="6" style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+                            You are not currently assigned to any projects. Contact your administrator for allocations.
+                        </td>
+                    </tr>
+                    <tr th:each="proj : ${myProjects}">
+                        <td style="font-weight: 700;" th:text="${proj.projectName}">Project Name</td>
+                        <td th:text="${proj.clientName}">Client</td>
+                        <td th:text="${proj.startDate}">2025-01-15</td>
+                        <td th:text="'$' + ${#numbers.formatDecimal(proj.budget, 1, 'COMMA', 2, 'POINT')}">$50,000.00</td>
+                        <td th:text="${proj.currentTeamSize} + ' / ' + ${proj.maximumTeamSize}">2 / 5</td>
+                        <td>
+                            <span class="status-badge" th:classappend="'status-' + ${proj.status}" th:text="${proj.status}">Active</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- VIEW B: ALL ALLOCATIONS MATRIX (ADMINISTRATOR OVERVIEW)    -->
+    <!-- ========================================================== -->
+    <div th:if="${!isPersonalView}">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Project Allocation Matrix</h2>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+                        Bidirectional mapping overview: Assigned team members per project and assigned projects per employee.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a th:href="@{/allocations/new}" class="btn btn-primary" style="background-color: #059669;">
+                        ⚡ New Project Allocation
+                    </a>
+                </div>
+            </div>
+
+            <!-- Project-Centric View -->
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+                Projects &amp; Their Allocated Members
+            </h3>
+
+            <div class="table-responsive" style="margin-bottom: 2rem;">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Status</th>
+                        <th>Capacity</th>
+                        <th>Allocated Employees</th>
+                        <th style="text-align: right;">De-allocate Member</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(projects)}">
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                            No projects found.
+                        </td>
+                    </tr>
+                    <tr th:each="proj : ${projects}">
+                        <td>
+                            <strong th:text="${proj.projectName}">Project</strong>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);" th:text="${proj.clientName}">Client</div>
+                        </td>
+                        <td>
+                            <span class="status-badge" th:classappend="'status-' + ${proj.status}" th:text="${proj.status}">Active</span>
+                        </td>
+                        <td>
+                            <span th:text="${proj.currentTeamSize} + ' / ' + ${proj.maximumTeamSize}">1 / 5</span>
+                        </td>
+                        <td>
+                            <div th:if="${proj.employees != null and !proj.employees.isEmpty()}" style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <div th:each="emp : ${proj.employees}" style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 0.3rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                                    <span>
+                                        <strong th:text="${emp.employeeName}">Emp</strong>
+                                        <small style="color: var(--text-muted);" th:text="' (' + ${emp.designation} + ')'"></small>
+                                    </span>
+                                    <form th:action="@{/allocations/remove}" method="post" style="display: inline;"
+                                          onsubmit="return confirm('Remove this employee allocation?');">
+                                        <input type="hidden" name="employeeId" th:value="${emp.employeeID}" />
+                                        <input type="hidden" name="projectId" th:value="${proj.projectID}" />
+                                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.15rem 0.4rem; font-size: 0.75rem;">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div th:if="${proj.employees == null or proj.employees.isEmpty()}" style="color: var(--text-muted); font-size: 0.85rem;">
+                                No team members allocated
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <a th:if="${proj.allocationAllowed}" th:href="@{/allocations/new}" class="btn btn-secondary btn-sm">
+                                + Allocate
+                            </a>
+                            <span th:if="${!proj.allocationAllowed}" style="font-size: 0.8rem; color: var(--text-muted);">
+                                Allocation closed
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Employee-Centric View -->
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-main);">
+                Employees &amp; Their Assigned Projects
+            </h3>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Designation</th>
+                        <th>Email</th>
+                        <th>Assigned Projects</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="emp : ${employees}">
+                        <td style="font-weight: 600;" th:text="${emp.employeeName}">John Doe</td>
+                        <td th:text="${emp.designation}">Developer</td>
+                        <td th:text="${emp.email}">john@college.edu</td>
+                        <td>
+                            <div th:if="${emp.projects != null and !emp.projects.isEmpty()}" style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                                <span th:each="p : ${emp.projects}" class="status-badge status-Active"
+                                      th:text="${p.projectName} + ' (' + ${p.status} + ')'">
+                                    Project Alpha
+                                </span>
+                            </div>
+                            <div th:if="${emp.projects == null or emp.projects.isEmpty()}" style="color: var(--text-muted); font-size: 0.85rem;">
+                                No project assignments
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    &copy; 2026 Employee Project Allocation System | Practical Examination
+</footer>
+
+</body>
+</html>

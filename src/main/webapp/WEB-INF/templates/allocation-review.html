@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Allocation - Employee Project Allocation System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" th:href="@{/dashboard}">
+            <span>🏢 ProjectAlloc</span>
+        </a>
+        <ul class="nav-links">
+            <li><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+            <li><a class="nav-link" th:href="@{/employees}">Employees</a></li>
+            <li><a class="nav-link" th:href="@{/projects}">Projects</a></li>
+            <li><a class="nav-link active" th:href="@{/allocations}">Allocations</a></li>
+            <li><a class="nav-link" th:href="@{/my-projects}">My Projects</a></li>
+            <li>
+                <div class="user-profile-badge">
+                    <span th:text="${currentUserName}">User</span>
+                    <span class="badge-role" th:classappend="${currentUserRole}" th:text="${currentUserRole}">ADMIN</span>
+                </div>
+            </li>
+            <li><a class="btn btn-secondary btn-sm" th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Step 2: Review Staged Allocations</h2>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+                    Temporary selections stored in HttpSession. Please verify before committing to database.
+                </p>
+            </div>
+        </div>
+
+        <!-- Failure / Error alert -->
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:utext="${errorMessage}">
+            Error message.
+        </div>
+
+        <!-- Employee Summary Card -->
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                Target Employee
+            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h4 style="font-size: 1.25rem; font-weight: 700;" th:text="${employee.employeeName}">Alice Johnson</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">
+                        <span th:text="${employee.designation}">Senior Developer</span> &bull;
+                        <span th:text="${employee.email}">alice@college.edu</span> &bull;
+                        Emp ID: <span th:text="${employee.employeeID}">1</span>
+                    </p>
+                </div>
+                <div>
+                    <span class="badge-role" th:classappend="${employee.role}" th:text="${employee.role}">EMPLOYEE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Projects Table -->
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+                Selected Projects to Assign (<span th:text="${#lists.size(selectedProjects)}">1</span>)
+            </h3>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Client</th>
+                        <th>Status</th>
+                        <th>Current Team</th>
+                        <th>New Team Size</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="proj : ${selectedProjects}">
+                        <td style="font-weight: 600;" th:text="${proj.projectName}">Campus ERP</td>
+                        <td th:text="${proj.clientName}">Apex University</td>
+                        <td>
+                            <span class="status-badge" th:classappend="'status-' + ${proj.status}" th:text="${proj.status}">
+                                Active
+                            </span>
+                        </td>
+                        <td th:text="${proj.currentTeamSize} + ' / ' + ${proj.maximumTeamSize}">1 / 3</td>
+                        <td>
+                            <strong style="color: var(--success);"
+                                    th:text="(${proj.currentTeamSize} + 1) + ' / ' + ${proj.maximumTeamSize}">
+                                2 / 3
+                            </strong>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Confirmation and Cancellation Action Forms -->
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <!-- Cancel Button: Triggers session cleanup and returns to form -->
+            <form th:action="@{/allocations/cancel}" method="post">
+                <button type="submit" class="btn btn-secondary">
+                    &times; Cancel Allocation
+                </button>
+            </form>
+
+            <!-- Confirm Button: Executes transactional commit and PRG -->
+            <form th:action="@{/allocations/confirm}" method="post">
+                <button type="submit" class="btn btn-primary" style="background-color: #059669;">
+                    ✓ Confirm &amp; Save Allocation
+                </button>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    &copy; 2026 Employee Project Allocation System | Practical Examination
+</footer>
+
+</body>
+</html>

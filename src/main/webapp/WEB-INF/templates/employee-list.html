@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees - Employee Project Allocation System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="../../css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a class="nav-brand" th:href="@{/dashboard}">
+            <span>🏢 ProjectAlloc</span>
+        </a>
+        <ul class="nav-links">
+            <li><a class="nav-link" th:href="@{/dashboard}">Dashboard</a></li>
+            <li><a class="nav-link active" th:href="@{/employees}">Employees</a></li>
+            <li><a class="nav-link" th:href="@{/projects}">Projects</a></li>
+            <li><a class="nav-link" th:href="@{/allocations}">Allocations</a></li>
+            <li><a class="nav-link" th:href="@{/my-projects}">My Projects</a></li>
+            <li>
+                <div class="user-profile-badge">
+                    <span th:text="${currentUserName}">User</span>
+                    <span class="badge-role" th:classappend="${currentUserRole}" th:text="${currentUserRole}">ADMIN</span>
+                </div>
+            </li>
+            <li><a class="btn btn-secondary btn-sm" th:href="@{/logout}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Employee Directory</h2>
+                <p style="color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem;">
+                    Manage staff records, roles, credentials, and project assignments.
+                </p>
+            </div>
+            <a th:href="@{/employees/new}" class="btn btn-primary">+ Add New Employee</a>
+        </div>
+
+        <!-- Success & Error Alert Messages -->
+        <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
+            Success message.
+        </div>
+        <div th:if="${errorMessage != null}" class="alert alert-danger" th:text="${errorMessage}">
+            Error message.
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Email Address</th>
+                    <th>Designation</th>
+                    <th>Salary</th>
+                    <th>Role</th>
+                    <th>Assigned Projects</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(employees)}">
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No employees found. Click "+ Add New Employee" to register one.
+                    </td>
+                </tr>
+                <tr th:each="emp : ${employees}">
+                    <td style="font-weight: 700;" th:text="${emp.employeeID}">1</td>
+                    <td th:text="${emp.employeeName}">John Doe</td>
+                    <td th:text="${emp.email}">john@college.edu</td>
+                    <td th:text="${emp.designation}">Developer</td>
+                    <td th:text="'$' + ${#numbers.formatDecimal(emp.salary, 1, 'COMMA', 2, 'POINT')}">$85,000.00</td>
+                    <td>
+                        <span class="badge-role" th:classappend="${emp.role}" th:text="${emp.role}">EMPLOYEE</span>
+                    </td>
+                    <td>
+                        <span th:if="${emp.projects != null and !emp.projects.isEmpty()}">
+                            <span class="status-badge status-Active" th:text="${emp.projects.size()} + ' Project(s)'">1 Project</span>
+                        </span>
+                        <span th:if="${emp.projects == null or emp.projects.isEmpty()}" style="color: var(--text-muted); font-size: 0.85rem;">
+                            None
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="btn-group" style="justify-content: flex-end;">
+                            <a th:href="@{/employees/edit(id=${emp.employeeID})}" class="btn btn-secondary btn-sm">
+                                Edit
+                            </a>
+                            <form th:action="@{/employees/delete}" method="post" style="display: inline;"
+                                  onsubmit="return confirm('Are you sure you want to delete this employee? Their project allocations will be cleanly removed.');">
+                                <input type="hidden" name="employeeID" th:value="${emp.employeeID}" />
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    &copy; 2026 Employee Project Allocation System | Practical Examination
+</footer>
+
+</body>
+</html>
