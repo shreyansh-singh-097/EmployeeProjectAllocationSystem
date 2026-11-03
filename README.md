@@ -149,19 +149,3 @@ open http://localhost:8080/EmployeeProjectAllocationSystem/login
 
 ---
 
-## Quick Viva Code Reference
-
-| Topic | Where to Show in Code |
-|---|---|
-| `@ManyToMany` + `@JoinTable` | [`Employee.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/model/Employee.java#L47-L57) |
-| `mappedBy` inverse side | [`Project.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/model/Project.java#L53-L57) |
-| `chain.doFilter()` | [`RequestLoggingFilter.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/filter/RequestLoggingFilter.java) |
-| `forward()` call | [`EmployeeServlet.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/controller/EmployeeServlet.java) → `request.getRequestDispatcher("/error").forward(...)` |
-| `sendRedirect()` call | [`LoginServlet.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/controller/LoginServlet.java) → `response.sendRedirect(contextPath + "/dashboard")` |
-| Session creation | [`LoginServlet.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/controller/LoginServlet.java) → `session.setAttribute(...)` |
-| Session invalidation | [`LogoutServlet.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/controller/LogoutServlet.java) → `session.invalidate()` |
-| Session staging | [`AllocationServlet.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/controller/AllocationServlet.java) → `handleStageAllocation()` |
-| Transaction + rollback | [`AllocationService.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/service/AllocationService.java) → `confirmAndSaveAllocation()` |
-| Password hashing | [`PasswordUtil.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/util/PasswordUtil.java) → `hashPassword()` / `verifyPassword()` |
-| Thymeleaf init | [`ThymeleafConfig.java`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/java/com/college/config/ThymeleafConfig.java) → `JakartaServletWebApplication.buildApplication()` |
-| Filter order | [`web.xml`](file:///Users/shreyanshsingh/Desktop/Shreyansh-Singh_SetB/src/main/webapp/WEB-INF/web.xml) → `<filter-mapping>` order |
